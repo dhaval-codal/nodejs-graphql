@@ -3,7 +3,7 @@ import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import { DataSource } from "typeorm";
 import { Users } from './Model/user.ts';
-import { schemaDetails } from './graphQl/schemas/index.js';
+import { schemaDetails } from './graphql-schemas/index.js';
 
 const main = async () => {
 

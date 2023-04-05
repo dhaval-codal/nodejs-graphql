@@ -28,8 +28,7 @@
     "nodemon": "^2.0.22"
   },
   "imports": {
-    "#graphql/*": "./graphQl/*",
-    "#schema/*": "./graphQl/schemas/*",
+    "#schema/*": "./graphql-schemas/*",
     "#model/*": "./Model/*"
   }
 }
