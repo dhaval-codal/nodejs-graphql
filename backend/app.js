@@ -1,24 +1,48 @@
-import { resolverDetails } from "#graphql/resolver.js";
-import { schemasDetails } from "#graphql/schema.js";
-import bodyParser from "body-parser";
+import cors from 'cors';
+import env from 'dotenv';
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
+import { DataSource } from "typeorm";
+import { Users } from './Model/user.ts';
+import { schemaDetails } from './graphql-schemas/index.js';
 
-const app = express();
+const main = async () => {
 
-app.use(bodyParser.json());
+  // dotEnv config
+  env.config()
 
-app.get("/", (request, response, next) => {
-  response.send("Welcome to learn GraphQl + Nodejs.");
-});
-
-app.use(
-  "/api/graphql",
-  graphqlHTTP({
-    schema: schemasDetails,
-    rootValue: resolverDetails,
-    graphiql: true,
+  const AppDataSource = new DataSource({
+    type: "mysql",
+    database: process.env.DATABASE_NAME,
+    username: process.env.DATABASE_USER_NAME,
+    password: process.env.DATABASE_PASSWORD,
+    logging: true,
+    synchronize: true,
+    entities: [Users]
   })
-);
 
-app.listen(3000);
+  await AppDataSource.initialize()
+    .then(() => {
+      console.log('Database Connected.');
+    })
+    .catch((error) => console.log(error))
+
+  const app = express();
+  app.use(cors());
+  app.use(express.json());
+  app.use(
+    "/api/graphql",
+    graphqlHTTP({
+      schema: schemaDetails,
+      graphiql: true,
+    })
+  );
+
+  app.listen(3000, () => {
+    console.log('Server is running on port 3000 of localhost.')
+  });
+}
+
+main().catch((error) => {
+  console.log("app.js:31 ~ error:", error)
+})
