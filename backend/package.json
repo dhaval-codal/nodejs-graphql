@@ -2,7 +2,8 @@
   "name": "nodejs-graphql-backend",
   "version": "1.0.0",
   "description": "Learn graphql with node js",
-  "main": "index.js",
+  "main": "app.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js"
@@ -17,5 +18,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
+  },
+  "imports": {
+    "#graphql/*": "./graphQl/*"
   }
 }

@@ -1,10 +1,10 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const { graphqlHTTP } = require("express-graphql");
-const { buildSchema } = require("graphql");
+import { resolverDetails } from "#graphql/resolver.js";
+import { schemasDetails } from "#graphql/schema.js";
+import bodyParser from "body-parser";
+import express from "express";
+import { graphqlHTTP } from "express-graphql";
 
 const app = express();
-const eventsList = [];
 
 app.use(bodyParser.json());
 
@@ -15,49 +15,8 @@ app.get("/", (request, response, next) => {
 app.use(
   "/api/graphql",
   graphqlHTTP({
-    schema: buildSchema(`
-        type eventsDetails {
-            _id: ID!
-            name: String!
-            description: String
-            price: Float!
-        }
-    
-        input eventsInput {
-            name: String!
-            description: String
-            price: Float!
-        }
-
-        type RootQuery {
-            events: [eventsDetails!]!
-        }
-        
-        type RootMutation {
-            createEvent(eventInput: eventsInput): eventsDetails
-        }
-
-        schema {
-            query: RootQuery
-            mutation: RootMutation
-        }
-    `),
-    rootValue: {
-      events: (arguments) => {
-        return eventsList;
-      },
-      createEvent: (arguments) => {
-        const eventDetails = arguments.eventInput;
-        const createEventDetails = {
-          _id: Math.random().toString(),
-          name: eventDetails.name,
-          description: eventDetails.description,
-          price: eventDetails.price,
-        };
-        eventsList.push(createEventDetails);
-        return createEventDetails;
-      },
-    },
+    schema: schemasDetails,
+    rootValue: resolverDetails,
     graphiql: true,
   })
 );
