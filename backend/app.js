@@ -1,4 +1,5 @@
 import cors from 'cors';
+import env from 'dotenv';
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import { DataSource } from "typeorm";
@@ -7,13 +8,16 @@ import { schemaDetails } from './graphql-schemas/index.js';
 
 const main = async () => {
 
+  // dotEnv config
+  env.config()
+
   const AppDataSource = new DataSource({
     type: "mysql",
-    database: "node-graphql",
-    username: "phpmyadmin",
-    password: "root",
+    database: process.env.DATABASE_NAME,
+    username: process.env.DATABASE_USER_NAME,
+    password: process.env.DATABASE_PASSWORD,
     logging: true,
-    synchronize: false,
+    synchronize: true,
     entities: [Users]
   })
 

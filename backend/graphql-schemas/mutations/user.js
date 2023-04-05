@@ -1,5 +1,6 @@
 import { Users } from "#model/user.js"
-import { GraphQLList, GraphQLString } from "graphql"
+import { GraphQLID, GraphQLList, GraphQLString } from "graphql"
+import { encryptKey } from "../../helper.js"
 import { userType } from "../typeDef/user.js"
 
 export const createUser = {
@@ -11,7 +12,22 @@ export const createUser = {
     },
     async resolve(parent, args) {
         const { username, email, password } = args
-        await Users.insert({ username, email, password })
-        return Users.find()
+        const userDetails = new Users()
+        userDetails.username = username
+        userDetails.email = email
+        userDetails.password = await encryptKey(password)
+        await userDetails.save()
+        return Users.find({ where: { username: username, email: email } })
+    }
+}
+
+export const deleteUser = {
+    type: new GraphQLList(userType),
+    args: {
+        userId: { type: GraphQLID },
+    },
+    async resolve(parent, args) {
+        const { userId } = args
+        await Users.delete(userId);
     }
 }
