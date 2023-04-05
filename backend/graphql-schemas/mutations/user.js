@@ -1,10 +1,11 @@
 import { Users } from "#model/user.js"
-import { GraphQLID, GraphQLList, GraphQLString } from "graphql"
+import { GraphQLID, GraphQLString } from "graphql"
 import { encryptKey } from "../../helper.js"
+import { responseType } from "../typeDef/message.js"
 import { userType } from "../typeDef/user.js"
 
 export const createUser = {
-    type: new GraphQLList(userType),
+    type: userType,
     args: {
         username: { type: GraphQLString },
         email: { type: GraphQLString },
@@ -22,12 +23,13 @@ export const createUser = {
 }
 
 export const deleteUser = {
-    type: new GraphQLList(userType),
+    type: responseType,
     args: {
         userId: { type: GraphQLID },
     },
     async resolve(parent, args) {
         const { userId } = args
         await Users.delete(userId);
+        return { error: false, message: `userId ${userId} deleted.` }
     }
 }
