@@ -17,7 +17,7 @@ export const createUser = {
         userDetails.email = email
         userDetails.password = await encryptKey(password)
         await userDetails.save()
-        return { error: false, message: `user created with email : ${email}.` }
+        return { error: false, message: `User created with email : ${email}.` }
     }
 }
 
@@ -40,7 +40,7 @@ export const updateUserPassword = {
         }
         userDetails.password = await encryptKey(newPassword)
         await userDetails.save()
-        return { error: false, message: `user password updated for user Id : ${userId}.` }
+        return { error: false, message: `User password updated for user Id : ${userId}.` }
     }
 }
 
@@ -52,6 +52,6 @@ export const deleteUser = {
     async resolve(parent, args) {
         const { userId } = args
         await Users.delete(userId);
-        return { error: false, message: `userId ${userId} deleted.` }
+        return { error: false, message: `UserId ${userId} deleted.` }
     }
 }
