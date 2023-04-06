@@ -15,7 +15,7 @@ export class Users extends BaseEntity {
   @IsNotEmpty({ message: "email is required" })
   email!: string;
 
-  @Column({ nullable: false, select: false })
+  @Column({ nullable: false })
   @IsNotEmpty({ message: "password is required" })
   password!: string;
 }

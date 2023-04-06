@@ -4,7 +4,11 @@ import { GraphQLList } from "graphql"
 
 export const getAllUsers = {
     type: new GraphQLList(userType),
-    resolve() {
-        return Users.find()
+    async resolve() {
+        let usersDetails = await Users.find()
+        await usersDetails.map((user) => {
+            delete user.password
+        })
+        return usersDetails
     }
 }

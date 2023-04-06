@@ -1,11 +1,10 @@
 import { Users } from "#model/user.js"
 import { GraphQLID, GraphQLString } from "graphql"
-import { encryptKey } from "../../helper.js"
+import { decryptKey, encryptKey } from "../../helper.js"
 import { responseType } from "../typeDef/message.js"
-import { userType } from "../typeDef/user.js"
 
 export const createUser = {
-    type: userType,
+    type: responseType,
     args: {
         username: { type: GraphQLString },
         email: { type: GraphQLString },
@@ -18,7 +17,30 @@ export const createUser = {
         userDetails.email = email
         userDetails.password = await encryptKey(password)
         await userDetails.save()
-        return Users.find({ where: { username: username, email: email } })
+        return { error: false, message: `user created with email : ${email}.` }
+    }
+}
+
+export const updateUserPassword = {
+    type: responseType,
+    args: {
+        userId: { type: GraphQLID },
+        oldPassword: { type: GraphQLString },
+        newPassword: { type: GraphQLString }
+    },
+    async resolve(parent, args) {
+        const { userId, oldPassword, newPassword } = args
+        let userDetails = await Users.findOneBy({ id: parseInt(userId) });
+        if (!userDetails) {
+            return { error: true, message: `User not found with userId : ${userId}.` }
+        }
+        let userPassword = await decryptKey(userDetails.password)
+        if (oldPassword !== userPassword) {
+            return { error: true, message: `Old password is not correct.` }
+        }
+        userDetails.password = await encryptKey(newPassword)
+        await userDetails.save()
+        return { error: false, message: `user password updated for user Id : ${userId}.` }
     }
 }
 
