@@ -32,6 +32,6 @@
   },
   "imports": {
     "#schema/*": "./graphql-schemas/*",
-    "#model/*": "./Model/*"
+    "#model/*": "./models/*"
   }
 }
