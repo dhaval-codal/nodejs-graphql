@@ -1,5 +1,6 @@
 import { Users } from "#model/user.js"
 import { GraphQLID, GraphQLString } from "graphql"
+import { Not } from "typeorm"
 import { decryptKey, encryptKey } from "../../helper.js"
 import { responseType } from "../typeDef/message.js"
 
@@ -41,6 +42,32 @@ export const updateUserPassword = {
         userDetails.password = await encryptKey(newPassword)
         await userDetails.save()
         return { error: false, message: `User password updated for user Id : ${userId}.` }
+    }
+}
+
+export const updateUserDetails = {
+    type: responseType,
+    args: {
+        userId: { type: GraphQLID },
+        username: { type: GraphQLString },
+        email: { type: GraphQLString }
+    },
+    async resolve(parent, args) {
+        const { userId, username, email } = args
+        let userDetails = await Users.findOneBy({ email: email, id: Not(userId) });
+        console.log("🚀 ~ file: user.js:57 ~ resolve ~ userDetails:", userDetails)
+        if (userDetails) {
+            return { error: true, message: `User found with same email : ${email}.` }
+        }
+        userDetails = await Users.findOneBy({ id: parseInt(userId) });
+        console.log("🚀 ~ file: user.js:62 ~ resolve ~ userDetails:", userDetails)
+        if (!userDetails) {
+            return { error: true, message: `User not found with userId : ${userId}.` }
+        }
+        userDetails.username = username
+        userDetails.email = email
+        await userDetails.save()
+        return { error: false, message: `User details updated for user Id : ${userId}.` }
     }
 }
 
