@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLObjectType, GraphQLString } from 'graphql'
+import { GraphQLID, GraphQLList, GraphQLObjectType, GraphQLString } from 'graphql'
 import { todoTypes } from './todos.js'
 
 export const userType = new GraphQLObjectType({
@@ -8,6 +8,6 @@ export const userType = new GraphQLObjectType({
         username: { type: GraphQLString },
         email: { type: GraphQLString },
         password: { type: GraphQLString },
-        todos: { type: todoTypes }
+        todos: { type: new GraphQLList(todoTypes) }
     })
 })
