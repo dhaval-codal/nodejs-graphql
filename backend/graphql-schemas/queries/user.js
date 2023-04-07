@@ -9,9 +9,7 @@ export const getAllUsers = {
             relations: {
                 todos: true,
             },
-        }
-        )
-        console.log("🚀 ~ file: user.js:14 ~ resolve ~ usersDetails:", usersDetails)
+        })
         await usersDetails.map((user) => {
             delete user.password
         })
