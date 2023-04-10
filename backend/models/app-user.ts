@@ -1,5 +1,14 @@
 import { IsEmail, IsNotEmpty } from "class-validator";
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { Todos } from "./todo.js";
 
 @Entity()
 export class Users extends BaseEntity {
@@ -15,7 +24,16 @@ export class Users extends BaseEntity {
   @IsNotEmpty({ message: "email is required" })
   email!: string;
 
-  @Column({ nullable: false, select: false })
+  @Column({ nullable: false })
   @IsNotEmpty({ message: "password is required" })
   password!: string;
+
+  @OneToMany((type) => Todos, (todo) => todo.userId)
+  todos!: Todos[];
+
+  @CreateDateColumn()
+  createDate!: Date;
+
+  @UpdateDateColumn()
+  updateDate!: Date;
 }
