@@ -1,8 +1,14 @@
 import { Users } from "#model/app-user.js"
+import env from 'dotenv'
 import { GraphQLID, GraphQLString } from "graphql"
+import Jwt from "jsonwebtoken"
 import { Not } from "typeorm"
 import { decryptKey, encryptKey } from "../../helper.js"
 import { responseType } from "../typeDef/message.js"
+
+// dotEnv config
+env.config()
+const JWT_SECRETE = process.env.JWT_KEY
 
 export const createUser = {
     type: responseType,
@@ -19,6 +25,28 @@ export const createUser = {
         userDetails.password = await encryptKey(password)
         await userDetails.save()
         return { error: false, message: `User created with email : ${email}.` }
+    }
+}
+
+
+export const loginUser = {
+    type: responseType,
+    args: {
+        email: { type: GraphQLString },
+        password: { type: GraphQLString },
+    },
+    async resolve(parent, args) {
+        const { email, password } = args
+        let userDetails = await Users.findOneBy({ email: email });
+        if (!userDetails) {
+            return { error: true, message: `Email or Password is not correct.` }
+        }
+        let userPassword = await decryptKey(userDetails.password)
+        if (password !== userPassword) {
+            return { error: true, message: `Email or Password is not correct.` }
+        }
+        let userToken = Jwt.sign({ userDetails }, JWT_SECRETE, { expiresIn: '1h' });
+        return { error: false, message: `User login success. Token : ${userToken}` }
     }
 }
 

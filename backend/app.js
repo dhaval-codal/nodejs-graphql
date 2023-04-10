@@ -3,6 +3,7 @@ import env from 'dotenv';
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
 import { DataSource } from "typeorm";
+import { authMiddleware } from './graphql-schemas/authMiddleware.js';
 import { schemaDetails } from './graphql-schemas/index.js';
 import { Users } from './models/app-user.js';
 import { Todos } from './models/todo.js';
@@ -28,17 +29,10 @@ const main = async () => {
     })
     .catch((error) => console.log(error))
 
-  const loggingMiddleware = (req, res, next) => {
-    console.log("🚀 ~ file: app.js:31 ~ loggingMiddleware ~ originalUrl:", req.originalUrl)
-    console.log("🚀 ~ file: app.js:31 ~ loggingMiddleware ~ headers:", req.headers)
-    console.log("🚀 ~ file: app.js:31 ~ loggingMiddleware ~ query:", req.query)
-    next();
-  }
-
   const app = express();
   app.use(cors());
   app.use(express.json());
-  // app.use(loggingMiddleware);
+  app.use(authMiddleware);
   app.use(
     "/api/graphql",
     graphqlHTTP({

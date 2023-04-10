@@ -1,6 +1,6 @@
 import { Users } from "#model/app-user.js"
 import { userType } from "#schema/typeDef/user.js"
-import { GraphQLList } from "graphql"
+import { GraphQLID, GraphQLList } from "graphql"
 
 export const getAllUsers = {
     type: new GraphQLList(userType),
@@ -14,5 +14,18 @@ export const getAllUsers = {
             delete user.password
         })
         return usersDetails
+    }
+}
+
+export const getUsersDetails = {
+    type: userType,
+    args: {
+        userId: { type: GraphQLID },
+    },
+    async resolve(parent, args) {
+        const { userId } = args
+        let userDetails = await Users.findOneBy({ id: parseInt(userId) });
+        delete userDetails.password
+        return userDetails
     }
 }
