@@ -18,8 +18,8 @@ export class Todos extends BaseEntity {
   @Column("longtext", { nullable: false })
   description!: string;
 
-  @ManyToOne((type) => Users, (user) => user.id)
-  userId!: Relation<Users>;
+  @ManyToOne((type) => Users, (user) => user.todos)
+  user!: Relation<Users>;
 
   @CreateDateColumn()
   createDate!: Date;

@@ -24,7 +24,11 @@ export const getUsersDetails = {
     },
     async resolve(parent, args) {
         const { userId } = args
-        let userDetails = await Users.findOneBy({ id: parseInt(userId) });
+        let userDetails = await Users.findOne({
+            relations: {
+                todos: true,
+            }, where: { id: parseInt(userId) }
+        });
         delete userDetails.password
         return userDetails
     }

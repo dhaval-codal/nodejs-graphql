@@ -28,7 +28,7 @@ export class Users extends BaseEntity {
   @IsNotEmpty({ message: "password is required" })
   password!: string;
 
-  @OneToMany((type) => Todos, (todo) => todo.userId)
+  @OneToMany((type) => Todos, (todo) => todo.user)
   todos!: Todos[];
 
   @CreateDateColumn()

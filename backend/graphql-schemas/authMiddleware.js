@@ -14,12 +14,16 @@ export const authMiddleware = async (request, response, next) => {
         if (!authorization) {
             return response.status(401).json({ error: true, message: `Authorization fails.` });
         }
-        let decodedJwt = Jwt.verify(authorization, JWT_SECRETE);
-        let { userDetails } = decodedJwt
-        let userDetailsDB = await Users.findOneBy({ id: parseInt(userDetails.id) });
-        if (!userDetailsDB) {
-            return response.status(401).json({ error: true, message: `Authorization fails.` });
-        }
+        await Jwt.verify(authorization, JWT_SECRETE, async (err, decode) => {
+            if (err) {
+                return response.status(401).send({ error: true, message: 'Unauthorized! Access Token was expired!' });
+            }
+            let { userDetails } = decode
+            let userDetailsDB = await Users.findOneBy({ id: parseInt(userDetails.id) });
+            if (!userDetailsDB) {
+                return response.status(401).json({ error: true, message: `Authorization fails.` });
+            }
+        });
     }
     next();
 }
